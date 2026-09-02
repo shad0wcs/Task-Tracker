@@ -11,7 +11,7 @@ engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommot=False, autoflush=False, bind=engine)
 
-Base = declarative_base
+Base = declarative_base()
 
 if __name__ == "__main__":
     connection = engine.connect()
