@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
-from app.models import Task
-from app.schemas import TaskCreate
+from app.models import Task, User
+from app.schemas import TaskCreate, UserCreate
+from app.auth import hash_password
 
 def create_task(db: Session, task: TaskCreate):
-    db_task = Task(title=task.title, description = task.description, status = task.status)
+    db_task = Task(title = task.title, description = task.description, status = task.status)
     db.add(db_task)
     db.commit()
     db.refresh(db_task)
@@ -27,3 +28,12 @@ def delete_task(db: Session, task_id: int):
     db.delete(task_to_delete)
     db.commit()
     return task_to_delete
+
+
+def create_user(db: Session, user: UserCreate):
+    hashed = hash_password(user.password)
+    db_user = User(email = user.email, hashed_password = hashed)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
