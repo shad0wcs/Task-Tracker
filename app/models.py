@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from datetime import datetime
 from app.database import Base
 
@@ -10,6 +10,7 @@ class Task(Base):
     description = Column(String, nullable=True)
     status = Column(String, default='todo')
     created_at = Column(DateTime, default=datetime.utcnow)
+    owner_id = Column(Integer, ForeignKey('users.id'))
 
 
 class User(Base):
