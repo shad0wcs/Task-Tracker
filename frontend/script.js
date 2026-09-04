@@ -5,8 +5,14 @@ async function login(email, password) {
         body: JSON.stringify({ email: email, password: password })
     });
 
+    if (!response.ok) {
+        alert('Неверный Email или Пароль')
+        return;
+    }
+
     const data = await response.json();
-    console.log(data);
+    localStorage.setItem("token", data.access_token);
+    window.location.href = "tasks.html";
 }
 
 document.querySelector("form").addEventListener("submit", async function(event) {
