@@ -1,20 +1,33 @@
 from pydantic import BaseModel
 from datetime import datetime
+from enum import Enum
+
+
+class TaskStatus(str, Enum):
+    todo = 'todo'
+    in_progress = 'in_progress'
+    done = 'done'
+
+
+class TaskPriority(str, Enum):
+    low = 'low'
+    medium = 'medium'
+    high = 'high'
 
 
 class TaskCreate(BaseModel):
     title: str
     description: str | None = None
-    status: str = 'todo'
-    priority: str = 'medium'
+    status: TaskStatus = TaskStatus.todo
+    priority: TaskPriority = TaskPriority.medium
 
 
 class TaskResponse(BaseModel):
     id: int
     title: str
     description: str | None = None
-    status: str
-    priority: str
+    status: TaskStatus
+    priority: TaskPriority
     created_at: datetime
 
     class Config:
