@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models import Task, User
-from app.schemas import TaskCreate, UserCreate
+from app.schemas import TaskCreate, UserCreate, TaskUpdate
 from app.auth import hash_password
 
 def create_task(db: Session, task: TaskCreate, owner_id: int):
@@ -28,6 +28,20 @@ def delete_task(db: Session, task_id: int, owner_id: int):
     db.delete(task_to_delete)
     db.commit()
     return task_to_delete
+
+
+def update_task(db: Session, task_id: int, task_update: TaskUpdate, owner_id: int):
+    db_task = get_task(db, task_id, owner_id)
+    if db_task is None:
+        return None
+
+    update_data = task_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_task, key, value)
+
+    db.commit()
+    db.refresh(db_task)
+    return db_task
 
 
 def create_user(db: Session, user: UserCreate):

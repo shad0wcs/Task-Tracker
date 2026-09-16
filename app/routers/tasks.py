@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.schemas import TaskCreate, TaskResponse
+from app.schemas import TaskCreate, TaskResponse, TaskUpdate
 from app import crud
 from app.models import User
 from app.auth import get_current_user
@@ -31,6 +31,14 @@ def read_task(task_id: int, db: Session = Depends(get_db), current_user: User = 
 @router.delete('/tasks/{task_id}', response_model=TaskResponse)
 def remove_task(task_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     task = crud.delete_task(db, task_id, current_user.id)
+    if task is None:
+        raise HTTPException(status_code=404, detail='Task not found')
+    return task
+
+
+@router.patch('/tasks/{task_id}', response_model=TaskResponse)
+def update_task(task_id: int, task_update: TaskUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    task = crud.update_task(db, task_id, task_update, current_user.id)
     if task is None:
         raise HTTPException(status_code=404, detail='Task not found')
     return task
