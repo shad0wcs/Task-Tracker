@@ -11,6 +11,7 @@ class Task(Base):
     status = Column(String, default='todo')
     created_at = Column(DateTime, default=datetime.utcnow)
     owner_id = Column(Integer, ForeignKey('users.id'))
+    priority = Column(String, default='medium')
 
 
 class User(Base):

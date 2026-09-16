@@ -6,6 +6,7 @@ class TaskCreate(BaseModel):
     title: str
     description: str | None = None
     status: str = 'todo'
+    priority: str = 'medium'
 
 
 class TaskResponse(BaseModel):
@@ -13,6 +14,7 @@ class TaskResponse(BaseModel):
     title: str
     description: str | None = None
     status: str
+    priority: str
     created_at: datetime
 
     class Config:

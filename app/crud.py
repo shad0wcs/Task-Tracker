@@ -4,7 +4,7 @@ from app.schemas import TaskCreate, UserCreate
 from app.auth import hash_password
 
 def create_task(db: Session, task: TaskCreate, owner_id: int):
-    db_task = Task(title = task.title, description = task.description, status = task.status, owner_id = owner_id)
+    db_task = Task(title = task.title, description = task.description, status = task.status, owner_id = owner_id, priority = task.priority)
     db.add(db_task)
     db.commit()
     db.refresh(db_task)
