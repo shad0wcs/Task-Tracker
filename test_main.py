@@ -22,10 +22,14 @@ def override_get_db():
 
 app.dependency_overrides[get_db] = override_get_db # тестовая сессия заместо реальной
 
-client = TestClient(app)
+@pytest.fixture
+def client():
+    Base.metadata.create_all(bind=engine)
+    yield TestClient(app)
+    Base.metadata.drop_all(bind=engine)
 
 
-def test_register_user():
+def test_register_user(client):
     response = client.post('/register', json={
         "email": "testuser@example.com",
         "password": "testpass123"
@@ -36,24 +40,24 @@ def test_register_user():
     assert 'id' in data
 
 
-def test_login_user():
+def test_login_user(client):
     client.post('/register', json={
-        "email": "testuser1@example.com",
-        "password": "testpass1123"
+        "email": "testuser@example.com",
+        "password": "testpass123"
     })
     response = client.post('/login', json={
-        "email": "testuser1@example.com",
-        "password": "testpass1123" 
+        "email": "testuser@example.com",
+        "password": "testpass123" 
     })
     assert response.status_code == 200
     data = response.json()
     assert 'access_token' in data
 
 
-def test_login_wrong_password():
+def test_login_wrong_password(client):
     client.post('/register', json={
-        "email": "testuser_wrongpassword@example.com",
-        "password": "password"
+        "email": "testuser@example.com",
+        "password": "testpass123"
     })
     response = client.post('/login', json={
         "email": "testuser_wrongpassword@example.com",
@@ -62,14 +66,14 @@ def test_login_wrong_password():
     assert response.status_code == 401
 
 
-def test_create_task():
+def test_create_task(client):
     client.post('/register', json={
-        "email": "createtask@example.com",
-        "password": "testpass1123"
+        "email": "testuser@example.com",
+        "password": "testpass123"
     })
     login_response = client.post('/login', json={
-        "email": "createtask@example.com",
-        "password": "testpass1123" 
+        "email": "testuser@example.com",
+        "password": "testpass123"
     })
     token = login_response.json()['access_token']
 
